@@ -12,13 +12,6 @@ class Post extends Model
     protected $table = 'posts';
     protected $guarded = false;
 
-
-
-    protected $datas = 'pubDate';
-
-    protected $dateFormat = 'D, d M Y H:i:s \G\M\T';
-
-
     public function categories() {
         return $this->belongsToMany(Category::class, 'post_category');
     }
