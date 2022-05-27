@@ -26,8 +26,9 @@ class StoreRequest extends FormRequest
         return [
             'title' => 'required|string',
             'link' => 'required|string',
-            'description' => 'required|text',
-            'pubDate' => 'required|date',
+            'description' => 'required|string',
+            'category' => 'string',
+            'pubDate' => 'required|date_format:"D, d M Y H:i:s \G\M\T"',
             'guid' => 'required|int',
         ];
     }

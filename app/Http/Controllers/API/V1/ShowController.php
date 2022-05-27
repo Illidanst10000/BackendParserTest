@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Services\PostService;
 use App\Models\Post;
 
 class ShowController extends Controller
@@ -17,9 +18,11 @@ class ShowController extends Controller
 
         $post = $postModel->toArray();
 
-        $post['pubDate'] = (new \DateTime())
-            ->createFromFormat('Y-m-d H:i:s', $post['pubDate']);
-        $post['pubDate'] = (date_format($post['pubDate'], 'D, d M Y H:i:s \G\M\T'));
+        $post['pubDate'] = (new PostService())
+            ->createDbDateObject($post['pubDate']);
+
+        $post['pubDate'] = (new PostService())
+            ->changeFormatDate($post['pubDate']);
 
         return response()->json($post, 200);
     }
