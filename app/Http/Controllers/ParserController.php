@@ -9,9 +9,8 @@ class ParserController extends Controller
 {
     public function __invoke()
     {
-        $input = file_get_contents('https://lifehacker.com/rss');
+        $input = file_get_contents(env('FEED_URL'));
         $data = simplexml_load_string($input, 'SimpleXMLElement', LIBXML_NOCDATA);
-
         (new PostService())->parsePosts($data);
     }
 }

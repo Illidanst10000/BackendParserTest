@@ -17,7 +17,7 @@ class ShowController extends Controller
         }
 
         $post = $postModel->toArray();
-
+       // return response()->json($post['pubDate']);
         $post['pubDate'] = (new PostService())
             ->createDbDateObject($post['pubDate']);
 

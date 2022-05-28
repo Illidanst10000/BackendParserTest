@@ -44,8 +44,7 @@ class PostService
                 unset($postValue['category']);
             }
 
-            $postValue['pubDate'] = (new PostService())
-                ->createDateObject($postValue['pubDate']);
+            $postValue['pubDate'] = $this->createDateObject($postValue['pubDate']);
 
             $post = Post::firstOrCreate($postValue);
 
@@ -118,8 +117,9 @@ class PostService
     }
 
     public function createDateObject($date) {
+
         return (new \DateTime())
-            ->createFromFormat('D, d M Y H:i:s \G\M\T', $date);
+            ->createFromFormat(env('FORMAT_DATE'), $date);
     }
 
     public function createDbDateObject($date) {
@@ -129,7 +129,7 @@ class PostService
 
     public function changeFormatDate($date) {
 
-        return (date_format($date, 'D, d M Y H:i:s \G\M\T'));
+        return (date_format($date, env('FORMAT_DATE')));
     }
 
     public function showAllPosts($postCollection) {
@@ -138,7 +138,7 @@ class PostService
             $post = $postModel->toArray();
 
             $post['pubDate'] = $this
-                ->createDateObject($post['pubDate']);
+                ->createDbDateObject($post['pubDate']);
 
             $post['pubDate'] = $this
                 ->changeFormatDate($post['pubDate']);

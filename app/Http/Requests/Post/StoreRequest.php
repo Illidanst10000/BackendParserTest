@@ -28,7 +28,7 @@ class StoreRequest extends FormRequest
             'link' => 'required|string',
             'description' => 'required|string',
             'category' => 'string',
-            'pubDate' => 'required|date_format:"D, d M Y H:i:s \G\M\T"',
+            'pubDate' => 'required|date_format:' . env('FORMAT_DATE'),
             'guid' => 'required|int',
         ];
     }

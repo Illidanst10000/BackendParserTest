@@ -28,7 +28,7 @@ class UpdateRequest extends FormRequest
             'link' => 'string',
             'description' => 'string',
             'category' => 'string',
-            'pubDate' => 'date_format:"D, d M Y H:i:s \G\M\T"',
+            'pubDate' => 'date_format:' . env('FORMAT_DATE'),
             'guid' => 'int',
         ];
     }
