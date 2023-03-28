@@ -28,8 +28,8 @@ class StoreRequest extends FormRequest
             'link' => 'required|string',
             'description' => 'required|string',
             'category' => 'string',
-            'pubDate' => 'required|date_format:' . env('FORMAT_DATE'),
             'guid' => 'required|int',
+            'pubDate' => 'required|string'
         ];
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Services;
 
+
 use App\Models\Category;
 use App\Models\Post;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use mysql_xdevapi\Exception;
 
@@ -11,25 +13,35 @@ class PostService
 {
     public function parsePosts($data)
     {
-        foreach ($data->channel->item as $value)
-        {
-            $postValue = (array)$value;
-
-            if (array_key_exists('category', $postValue))
+        try {
+            foreach ($data->channel->item as $value)
             {
-                $postCategories = $postValue['category'];
-                unset($postValue['category']);
-            }
+                DB::beginTransaction();
+                $postValue = (array)$value;
 
-            $postValue['pubDate'] = $this->createDateObject($postValue['pubDate']);
+                if (array_key_exists('category', $postValue))
+                {
+                    $postCategories = $postValue['category'];
+                    unset($postValue['category']);
+                }
 
-            $post = Post::firstOrCreate($postValue);
+                $postValue['pubDate'] = $this->createDateObject($postValue['pubDate']);
 
-            if (isset($postCategories))
-            {
-                $categoryIds = $this->parseCategory($postCategories);
-                $this->attachCategory($post, $categoryIds);
-            }
+                $post = Post::firstOrCreate($postValue);
+
+                if (isset($postCategories))
+                {
+                        $categoryIds = $this->parseCategory($postCategories);
+                        $this->attachCategory($post, $categoryIds);
+                }
+
+                DB::commit();
+
+        }
+
+        } catch (Exception $exception) {
+            DB::rollBack();
+            abort(500);
         }
     }
 
@@ -44,8 +56,6 @@ class PostService
                 unset($postValue['category']);
             }
 
-            $postValue['pubDate'] = $this->createDateObject($postValue['pubDate']);
-
             $post = Post::firstOrCreate($postValue);
 
             if (isset($postCategories))
@@ -55,6 +65,7 @@ class PostService
             }
 
             DB::commit();
+            dd(1);
         }
         catch (Exception $exception) {
             DB::rollBack();
@@ -98,9 +109,14 @@ class PostService
 
     public function parseCategory($postCategories)
     {
+        if (is_string($postCategories)) {
+            $postCategories = array($postCategories);
+        }
         foreach ($postCategories as $categoryTitle)
         {
+
             $categoryData = ['title' => $categoryTitle];
+
             $category = Category::firstOrCreate($categoryData);
 
             $categoryIds[] = $category->id;
@@ -116,10 +132,9 @@ class PostService
         }
     }
 
-    public function createDateObject($date) {
+    public static function createDateObject($date) {
 
-        return (new \DateTime())
-            ->createFromFormat(env('FORMAT_DATE'), $date);
+        return (new \DateTime())->createFromFormat(env('FORMAT_DATE'), $date);
     }
 
     public function createDbDateObject($date) {
