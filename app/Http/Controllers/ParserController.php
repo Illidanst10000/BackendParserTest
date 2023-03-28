@@ -2,30 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PostRequest;
+use App\Http\Services\PostService;
 use App\Models\Post;
-use Illuminate\Http\Request;
 
 class ParserController extends Controller
 {
-    public function __invoke()
+    private $postService;
+
+    public function __construct(PostService $postService)
     {
-        $input = file_get_contents('https://lifehacker.com/rss');
-        $data = simplexml_load_string($input, 'SimpleXMLElement', LIBXML_NOCDATA);
-
-        foreach ($data->channel->item as $value) {
-            $this->getPostData((array) $value);
-        }
-
+        $this->postService = $postService;
     }
 
-    public function getPostData($postData) {
-        if (array_key_exists('category', $postData)) {
-            unset($postData['category']);
-        }
-
-
-        Post::firstOrCreate($postData);
-
+    public function __invoke()
+    {
+        $input = file_get_contents(env('FEED_URL'));
+        $data = simplexml_load_string($input, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $this->postService->parsePosts($data);
     }
 }

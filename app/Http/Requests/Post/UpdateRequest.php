@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Post;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PostRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,12 @@ class PostRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string',
-            'link' => 'required|string',
-            'description' => 'required|text',
-            'pubDate' => 'required|date',
-            'guid' => 'required|integer',
+            'title' => 'string',
+            'link' => 'string',
+            'description' => 'string',
+            'category' => 'string',
+            'pubDate' => 'date_format:' . env('FORMAT_DATE'),
+            'guid' => 'int',
         ];
     }
 }
